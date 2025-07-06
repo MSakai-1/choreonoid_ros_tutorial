@@ -81,6 +81,7 @@ items:
           name: "go2_description"
           plugin: Body
           class: BodyItem
+          is_selected: true
           is_checked: true
           data:
             file: "${HOME}/genesis_ws/Genesis/genesis/assets/urdf/go2/urdf/go2.urdf"
@@ -159,6 +160,7 @@ items:
               data:
                 isNoDelayMode: false
                 controllerOptions: ""
+                controller: "vnoid_shorttrack_controller"
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
@@ -357,7 +359,7 @@ viewAreas:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 453, 452 ]
+              sizes: [ 501, 500 ]
               children:
                 -
                   type: pane
@@ -369,7 +371,7 @@ viewAreas:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 679, 226 ]
+              sizes: [ 751, 250 ]
               children:
                 -
                   type: pane
@@ -381,7 +383,7 @@ viewAreas:
         -
           type: splitter
           orientation: vertical
-          sizes: [ 178, 727 ]
+          sizes: [ 197, 804 ]
           children:
             -
               type: pane
@@ -389,7 +391,7 @@ viewAreas:
             -
               type: splitter
               orientation: vertical
-              sizes: [ 258, 465 ]
+              sizes: [ 285, 515 ]
               children:
                 -
                   type: pane
