@@ -10,9 +10,9 @@
     </rosparam>
     <param name="h_limit_min" value="0"/>
     <param name="h_limit_max" value="120"/>
-    <param name="s_limit_min" value="10"/>
-    <param name="s_limit_max" value="255"/>
-    <param name="i_limit_min" value="10"/>
+    <param name="s_limit_min" value="0"/>
+    <param name="s_limit_max" value="30"/>
+    <param name="i_limit_min" value="180"/>
     <param name="i_limit_max" value="255"/>
   </node>
 

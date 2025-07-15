@@ -56,8 +56,15 @@ items:
                 base_directory: "Controller directory"
                 reloading: false
                 export_symbols: false
+            -
+              id: 5
+              name: "BodyPublisher"
+              plugin: ROS
+              class: BodyPublisherItem
+              data:
+                max_publishing_rate: 30
         -
-          id: 4
+          id: 6
           name: "AISTSimulator"
           plugin: Body
           class: AISTSimulatorItem
@@ -90,7 +97,7 @@ items:
             oldAccelSensorMode: false
           children:
             -
-              id: 5
+              id: 7
               name: "GLVisionSimulator"
               plugin: Body
               class: GLVisionSimulatorItem
@@ -108,7 +115,7 @@ items:
                 enable_additional_lights: true
                 antialiasing: false
             -
-              id: 6
+              id: 8
               name: "WorldLogFile"
               plugin: Body
               class: WorldLogFileItem
@@ -118,7 +125,7 @@ items:
                 timeStampSuffix: true
                 recordingFrameRate: 0
         -
-          id: 7
+          id: 9
           name: "HVAC2022_athletics_field"
           plugin: Body
           class: BodyItem
@@ -149,7 +156,7 @@ items:
             zmp: [ 0, 0, 0 ]
           children:
             -
-              id: 8
+              id: 10
               name: "TimerController"
               plugin: Body
               class: SimpleControllerItem
@@ -161,7 +168,7 @@ items:
                 reloading: false
                 export_symbols: false
         -
-          id: 9
+          id: 12
           name: "WorldROS"
           plugin: ROS
           class: WorldROSItem
@@ -179,7 +186,7 @@ views:
     class: ItemTreeView
     mounted: true
     state:
-      expanded: [ 1, 2, 3, 4, 7, 8 ]
+      expanded: [ 1, 2, 3, 6, 9, 10 ]
   -
     id: 2
     plugin: Base
@@ -317,7 +324,7 @@ toolbars:
     lazyCollisionDetectionMode: true
 Body:
   "BodySelectionManager":
-    current_body_item: 7
+    current_body_item: 9
     current_link: "Base"
   "KinematicFaultChecker":
     checkJointPositions: true
@@ -336,7 +343,7 @@ Body:
         show_cm_projection: false
         show_zmp: false
       -
-        body_item: 7
+        body_item: 9
         show_cm: false
         show_cm_projection: false
         show_zmp: false
