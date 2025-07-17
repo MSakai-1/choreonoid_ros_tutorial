@@ -2,73 +2,75 @@
 import rospy
 import cv2
 import numpy as np
+import math
 
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import CompressedImage
+from std_msgs.msg import Float32
 from geometry_msgs.msg import Twist
 from cv_bridge import CvBridge
 
-class WhiteLineFollowerFromCamera:
+class LineFollower:
     def __init__(self):
-        rospy.init_node("white_line_follower_from_camera")
+        rospy.init_node("line_follower")
 
         self.bridge = CvBridge()
-        self.image_sub = rospy.Subscriber("/camera/image_raw", Image, self.image_callback, queue_size=1)
-        self.cmd_pub = rospy.Publisher("/cmd_vel", Twist, queue_size=1)
-
-        self.k_y = 0.01
-        self.target_x = 0.4
+        self.image_sub = rospy.Subscriber("/go2_description/camera1/image/compressed", CompressedImage, self.image_callback, queue_size=1)
+        self.yaw_pub = rospy.Publisher("/yaw_error", Float32, queue_size=1)
+        self.visualize = rospy.get_param("~visualize", True)
 
     def image_callback(self, msg):
-        try:
-            cv_img = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")
-        except Exception as e:
-            rospy.logerr("cv_bridge exception: %s", e)
+        np_arr = np.frombuffer(msg.data, np.uint8)
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        if frame is None:
             return
 
-        # 白色抽出（HSVで）
-        hsv = cv2.cvtColor(cv_img, cv2.COLOR_BGR2HSV)
+        # mask
+        hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         lower_white = np.array([0, 0, 200])
-        upper_white = np.array([180, 30, 255])
+        upper_white = np.array([180, 50, 255])
         mask = cv2.inRange(hsv, lower_white, upper_white)
 
-        # エッジ検出 → ハフ変換
-        edges = cv2.Canny(mask, 50, 150)
-        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, 50, minLineLength=50, maxLineGap=10)
+        # edge & hough
+        edges = cv2.Canny(mask, 50, 150, apertureSize=3)
+        lines = cv2.HoughLinesP(edges, 1, np.pi / 180, threshold=100, minLineLength=100, maxLineGap=10)
 
-        height, width = mask.shape
-        center_x = width // 2
-        closest_left_x = -1
-        closest_right_x = width + 1
+        yaw_angles = []
 
         if lines is not None:
+            img_center_x = frame.shape[1] // 2
+            line_info = [] 
+
             for line in lines:
                 x1, y1, x2, y2 = line[0]
-                x_avg = (x1 + x2) // 2
-                y_avg = (y1 + y2) // 2
-                if y_avg > height // 3:
-                    if x_avg < center_x and x_avg > closest_left_x:
-                        closest_left_x = x_avg
-                    elif x_avg > center_x and x_avg < closest_right_x:
-                        closest_right_x = x_avg
+                mid_x = (x1 + x2) / 2.0
+                dist_to_center = abs(mid_x - img_center_x)
 
-        # 移動制御指令
-        twist = Twist()
-        twist.linear.x = self.target_x
+                angle_rad = math.atan2(y2 - y1, x2 - x1)
+                line_info.append((dist_to_center, angle_rad, (x1, y1, x2, y2)))
+                angle_deg = np.rad2deg(angle_rad)
+                
+            line_info.sort(key=lambda x: x[0])
+            selected_lines = line_info[:4]
 
-        if closest_left_x >= 0 and closest_right_x <= width:
-            mid = (closest_left_x + closest_right_x) // 2
-            error = center_x - mid
-            twist.linear.y = self.k_y * error
-            rospy.loginfo("Tracking midline. Error: %d", error)
-        else:
-            rospy.logwarn("Could not find both left and right lines. y=0")
-            twist.linear.y = 0.0
+            yaw_angles = []
+            for _, yaw, (x1, y1, x2, y2) in selected_lines:
+                yaw_angles.append(yaw)
+                if self.visualize:
+                    cv2.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 3)
+        
+        if yaw_angles:
+            mean_yaw = np.mean(yaw_angles)
+            self.yaw_pub.publish(Float32(data=mean_yaw))
+            rospy.loginfo(f"mean_yaw: {math.degrees(mean_yaw):.2f} deg")
 
-        self.cmd_pub.publish(twist)
+        if self.visualize:
+            cv2.imshow("line detection", frame)
+            cv2.waitKey(1)
 
 if __name__ == "__main__":
     try:
-        WhiteLineFollowerFromCamera()
+        LineFollower()
         rospy.spin()
     except rospy.ROSInterruptException:
         pass

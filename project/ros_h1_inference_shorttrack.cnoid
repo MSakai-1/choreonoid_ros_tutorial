@@ -17,21 +17,21 @@ items:
       children:
         -
           id: 2
-          name: "go2_description"
+          name: "h1_description"
           plugin: Body
           class: BodyItem
           is_checked: true
           data:
             file: "${HOME}/genesis_ws/Genesis/h1/h1_10dof.urdf"
             format: URDF
-            rootPosition: [ 0, 0, 1.0 ]
+            rootPosition: [ 0, 0, 0.9 ]
             rootAttitude: [
               1, 0, 0,
               0, 1, 0,
               0, 0, 1 ]
             jointDisplacements: [
               0, 0, -22.92, 45.84, -22.92, 0, 0, -22/92, 45.84, -22.92]
-            initialRootPosition: [ 0, 0, 1.0]
+            initialRootPosition: [ 0, 0, 0.9]
             initialRootAttitude: [
               1, 0, 0,
               0, 1, 0,

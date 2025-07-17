@@ -8,8 +8,9 @@
     <remap from="joint_states" to="/go2_description/joint_state" />
   </node>
 
+  <node pkg="choreonoid_ros_tutorial" type="line_follower.py" name="line_follower" output="screen"/>
   <node pkg="choreonoid_ros_tutorial" type="velocity_publisher.py" name="velocity_publisher" output="screen"/>
-  <!--node pkg="choreonoid_ros_tutorial" type="line_follower.py" name="line_follower" output="screen"/-->
+  
   <node pkg="choreonoid_ros" name="choreonoid" type="choreonoid"
         args="$(arg cnoid_file) --start-simulation">
   </node>

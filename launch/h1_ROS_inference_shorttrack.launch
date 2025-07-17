@@ -5,10 +5,10 @@
   <param name="robot_description" textfile="$(env HOME)/genesis_ws/Genesis/h1/h1_10dof.urdf" />
 
   <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
-    <remap from="joint_states" to="/go2_description/joint_state" />
+    <remap from="joint_states" to="/h1_description/joint_state" />
   </node>
 
-  <node pkg="choreonoid_ros_tutorial" type="velocity_publisher.py" name="velocity_publisher" output="screen"/>
+  <node pkg="choreonoid_ros_tutorial" type="velocity_publisher_2.py" name="velocity_publisher" output="screen"/>
   <!--node pkg="choreonoid_ros_tutorial" type="line_follower.py" name="line_follower" output="screen"/-->
   <node pkg="choreonoid_ros" name="choreonoid" type="choreonoid"
         args="$(arg cnoid_file) --start-simulation">
